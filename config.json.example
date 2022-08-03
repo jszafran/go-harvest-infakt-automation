@@ -1,0 +1,5 @@
+{
+  "authToken": "someTokenValue",
+  "apiUrl": "https://api.harvestapp.com/api/v2",
+  "accountId": 12345
+}
