@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"log"
+	"reflect"
 	"testing"
 )
 
@@ -35,6 +37,39 @@ func TestMonthsLastDay(t *testing.T) {
 		if tc.err != nil {
 			if err.Error() != tc.err.Error() {
 				t.Fatalf("Expected err %v but got err %v", tc.err, err)
+			}
+		}
+	}
+}
+
+func TestAsMonthRange(t *testing.T) {
+	type TestCase struct {
+		month int
+		year  int
+		want  MonthRange
+		err   error
+	}
+
+	testCases := []TestCase{
+		{1, 2022, MonthRange{Start: "2022-01-01", End: "2022-01-31"}, nil},
+		{2, 2022, MonthRange{Start: "2022-02-01", End: "2022-02-28"}, nil},
+		{3, 2022, MonthRange{Start: "2022-03-01", End: "2022-03-31"}, nil},
+		{4, 2022, MonthRange{Start: "2022-04-01", End: "2022-04-30"}, nil},
+		{2, 2024, MonthRange{Start: "2024-02-01", End: "2024-02-29"}, nil},
+	}
+
+	for _, tc := range testCases {
+		got, err := AsMonthRange(tc.month, tc.year)
+		if !reflect.DeepEqual(tc.want, got) {
+			t.Fatalf("Expected %v but got %v", tc.want, got)
+		}
+
+		if tc.err != nil {
+			if err == nil {
+				log.Fatalf("Expected %v error but got none", tc.err)
+			}
+			if tc.err.Error() != err.Error() {
+				t.Fatalf("Expected error %v but got %v", tc.err, err)
 			}
 		}
 	}
