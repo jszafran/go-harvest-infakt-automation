@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/shopspring/decimal"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -10,6 +13,19 @@ import (
 type HarvestHTTP struct {
 	Config HarvestConfig
 	client http.Client
+}
+
+type Client struct {
+	Name string `json:name`
+}
+
+type TimeEntry struct {
+	Client       Client
+	RoundedHours decimal.Decimal `json:"rounded_hours"`
+}
+
+type TimeEntriesApiResponse struct {
+	TimeEntries []TimeEntry `json:"time_entries"`
 }
 
 func NewHarvestClient(configPath string) (HarvestHTTP, error) {
@@ -41,4 +57,33 @@ func (h HarvestHTTP) getRequest(path string) (*http.Response, error) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", h.Config.HarvestAuthToken))
 
 	return h.client.Do(req)
+}
+
+func (h HarvestHTTP) GetTimeEntries(month int, year int) ([]TimeEntry, error) {
+	var apiResp TimeEntriesApiResponse
+	var entries []TimeEntry
+	mr, err := AsMonthRange(month, year)
+
+	if err != nil {
+		return entries, nil
+	}
+
+	reqPath := fmt.Sprintf("time_entries?per_page=100&from=%s&to=%s", mr.Start, mr.End)
+	resp, err := h.getRequest(reqPath)
+
+	if err != nil {
+		return entries, err
+	}
+
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return entries, err
+	}
+
+	err = json.Unmarshal(b, &apiResp)
+	if err != nil {
+		return entries, err
+	}
+
+	return apiResp.TimeEntries, nil
 }
