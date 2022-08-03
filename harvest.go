@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -38,8 +37,7 @@ func (h HarvestHTTP) getRequest(path string) (*http.Response, error) {
 		log.Fatalf("Failed to create requqest: %v", err)
 	}
 
-	accId := strconv.Itoa(h.Config.HarvestAccountId)
-	req.Header.Set("Harvest-Account-ID", accId)
+	req.Header.Set("Harvest-Account-ID", h.Config.HarvestAccountId)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", h.Config.HarvestAuthToken))
 
 	return h.client.Do(req)

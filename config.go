@@ -14,7 +14,7 @@ type AppConfig struct {
 type HarvestConfig struct {
 	HarvestApiUrl    string `json:"harvestApiUrl"`
 	HarvestAuthToken string `json:"harvestAuthToken"`
-	HarvestAccountId int    `json:"harvestAccountId"`
+	HarvestAccountId string `json:"harvestAccountId"`
 }
 
 type InfaktConfig struct {
