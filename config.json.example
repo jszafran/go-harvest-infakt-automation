@@ -1,5 +1,7 @@
 {
-  "authToken": "someTokenValue",
-  "apiUrl": "https://api.harvestapp.com/api/v2",
-  "accountId": 12345
+  "harvestAuthToken": "harvestAuthTokenExample",
+  "harvestApiUrl": "https://api.harvestapp.com/api/v2",
+  "harvestAccountId": 123456,
+  "infaktApiUrl": "https://api.infakt.pl/v3",
+  "infaktApiKey": "infaktApiKey123"
 }
