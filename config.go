@@ -69,6 +69,6 @@ func InfaktConfigFromJSON(jsonPath string) (InfaktConfig, error) {
 
 	return InfaktConfig{
 		InfaktApiUrl: ac.InfaktApiUrl,
-		InfaktApiKey: ac.InfaktApiUrl,
+		InfaktApiKey: ac.InfaktApiKey,
 	}, nil
 }
