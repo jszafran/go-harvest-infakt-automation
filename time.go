@@ -8,7 +8,7 @@ import (
 
 func MonthsLastDay(month int, year int) (int, error) {
 	var lastDay int
-	if month < 1 && month > 12 {
+	if month < 1 || month > 12 {
 		return lastDay, errors.New(fmt.Sprintf("invalid month: %d", month))
 	}
 
@@ -16,12 +16,11 @@ func MonthsLastDay(month int, year int) (int, error) {
 		return lastDay, errors.New(fmt.Sprintf("invalid year: %d", year))
 	}
 
-	day := time.Date(year, time.Month(month), 28, 0, 0, 0, 0, time.UTC)
-
-	for i := 28; i <= 31; i++ {
-		nextDay := day.Add(time.Hour * 24)
-		if d, m, _ := nextDay.Date(); !(m == time.Month(month)) {
-			lastDay = d
+	for day := 28; day <= 31; day++ {
+		dt := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+		if _, m, _ := dt.Add(time.Hour * 24).Date(); !(m == time.Month(month)) {
+			lastDay = dt.Day()
+			break
 		}
 	}
 	return lastDay, nil
