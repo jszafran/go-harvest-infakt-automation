@@ -47,7 +47,7 @@ func (h HarvestHTTP) getRequest(path string) (*http.Response, error) {
 		path = path[1:]
 	}
 
-	url := fmt.Sprintf("%s%s", h.Config.HarvestApiUrl, path)
+	url := fmt.Sprintf("%s/%s", h.Config.HarvestApiUrl, path)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatalf("Failed to create requqest: %v", err)
