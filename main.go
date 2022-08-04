@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 )
 
@@ -10,13 +9,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	entr, err := hvst.GetTimeEntries(7, 2022)
+	entries, err := hvst.GetTimeEntries(8, 2022)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, te := range entr {
-		fmt.Printf("%+v", te)
-	}
+	ms := MakeMonthlySummary(entries)
+
+	ms.Print()
 }

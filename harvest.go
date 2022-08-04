@@ -28,6 +28,19 @@ type TimeEntriesApiResponse struct {
 	TimeEntries []TimeEntry `json:"time_entries"`
 }
 
+type MonthlySummary map[string]decimal.Decimal
+
+func (m MonthlySummary) Print() {
+	if len(m) == 0 {
+		fmt.Println("No hours logged for given period.")
+		return
+	}
+	
+	for k, v := range m {
+		fmt.Printf("%s: %s hours\n", k, v)
+	}
+}
+
 func NewHarvestClient(configPath string) (HarvestHTTP, error) {
 	var hv HarvestHTTP
 	hvConf, err := HarvestConfigFromJSON(configPath)
@@ -86,4 +99,13 @@ func (h HarvestHTTP) GetTimeEntries(month int, year int) ([]TimeEntry, error) {
 	}
 
 	return apiResp.TimeEntries, nil
+}
+
+func MakeMonthlySummary(te []TimeEntry) MonthlySummary {
+	ms := make(map[string]decimal.Decimal)
+
+	for _, entry := range te {
+		ms[entry.Client.Name] = ms[entry.Client.Name].Add(entry.RoundedHours)
+	}
+	return ms
 }
