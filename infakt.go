@@ -5,13 +5,13 @@ type InfaktHTTP struct {
 }
 
 func (i InfaktHTTP) NewInfaktClient(configPath string) (InfaktHTTP, error) {
-	var ifkt InfaktHTTP
-	ifConf, err := InfaktConfigFromJSON(configPath)
+	var infakt InfaktHTTP
+	infaktConf, err := InfaktConfigFromJSON(configPath)
 	if err != nil {
-		return ifkt, err
+		return infakt, err
 	}
 
 	return InfaktHTTP{
-		Config: ifConf,
+		Config: infaktConf,
 	}, nil
 }
