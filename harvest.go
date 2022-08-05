@@ -35,7 +35,7 @@ func (m MonthlySummary) Print() {
 		fmt.Println("No hours logged for given period.")
 		return
 	}
-	
+
 	for k, v := range m {
 		fmt.Printf("%s: %s hours\n", k, v)
 	}
@@ -60,14 +60,14 @@ func (h HarvestHTTP) getRequest(path string) (*http.Response, error) {
 		path = path[1:]
 	}
 
-	url := fmt.Sprintf("%s/%s", h.Config.HarvestApiUrl, path)
+	url := fmt.Sprintf("%s/%s", h.Config.ApiUrl, path)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatalf("Failed to create requqest: %v", err)
 	}
 
-	req.Header.Set("Harvest-Account-ID", h.Config.HarvestAccountId)
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", h.Config.HarvestAuthToken))
+	req.Header.Set("Harvest-Account-ID", h.Config.AccountId)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", h.Config.AuthToken))
 
 	return h.client.Do(req)
 }

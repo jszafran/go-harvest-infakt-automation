@@ -1,13 +1,19 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/shopspring/decimal"
+	"log"
+	"net/http"
+	"time"
 )
 
 type InfaktHTTP struct {
 	Config InfaktConfig
+	client http.Client
 }
 
 type ServiceLine struct {
@@ -36,12 +42,34 @@ func NewInfaktClient(configPath string) (InfaktHTTP, error) {
 	if err != nil {
 		return infakt, err
 	}
-
+	httpClient := http.Client{Timeout: time.Second * 5}
 	return InfaktHTTP{
 		Config: infaktConf,
+		client: httpClient,
 	}, nil
 }
 
+func (i InfaktHTTP) postRequest(path string, data DraftInvoiceRequest) (*http.Response, error) {
+	if string(path[0]) == "/" {
+		path = path[1:]
+	}
+
+	url := fmt.Sprintf("%s/%s", i.Config.ApiUrl, path)
+
+	jsonBody, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		log.Fatalf("Failed to create request: %v", err)
+	}
+
+	req.Header.Set("X-inFakt-ApiKey", i.Config.ApiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	return i.client.Do(req)
+}
 func (i InfaktHTTP) generateServicesFromMonthlySummary(ms MonthlySummary) []ServiceLine {
 	svs := make([]ServiceLine, 0)
 	for client, hrs := range ms {
@@ -77,5 +105,10 @@ func (i InfaktHTTP) CreateDraftInvoice(month int, year int, ms MonthlySummary) e
 		},
 	}
 	fmt.Printf("%+v\n", reqData)
+	resp, err := i.postRequest("invoices.json", reqData)
+	if err != nil {
+		return err
+	}
+	fmt.Println(resp)
 	return nil
 }

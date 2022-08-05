@@ -7,14 +7,14 @@ import (
 )
 
 type AppConfig struct {
-	HarvestConfig
-	InfaktConfig
+	Harvest HarvestConfig `json:"harvest"`
+	Infakt  InfaktConfig  `json:"infakt"`
 }
 
 type HarvestConfig struct {
-	HarvestApiUrl    string `json:"harvestApiUrl"`
-	HarvestAuthToken string `json:"harvestAuthToken"`
-	HarvestAccountId string `json:"harvestAccountId"`
+	ApiUrl    string `json:"harvestApiUrl"`
+	AuthToken string `json:"harvestAuthToken"`
+	AccountId string `json:"harvestAccountId"`
 }
 
 type InfaktConfig struct {
@@ -55,9 +55,9 @@ func HarvestConfigFromJSON(jsonPath string) (HarvestConfig, error) {
 	}
 
 	return HarvestConfig{
-		HarvestApiUrl:    ac.HarvestApiUrl,
-		HarvestAuthToken: ac.HarvestAuthToken,
-		HarvestAccountId: ac.HarvestAccountId,
+		ApiUrl:    ac.Harvest.ApiUrl,
+		AuthToken: ac.Harvest.AuthToken,
+		AccountId: ac.Harvest.AccountId,
 	}, nil
 }
 
@@ -70,8 +70,8 @@ func InfaktConfigFromJSON(jsonPath string) (InfaktConfig, error) {
 	}
 
 	return InfaktConfig{
-		ApiUrl:            ac.ApiUrl,
-		ApiKey:            ac.ApiKey,
-		HourlyRateInGrosz: ac.HourlyRateInGrosz,
+		ApiUrl:            ac.Infakt.ApiUrl,
+		ApiKey:            ac.Infakt.ApiKey,
+		HourlyRateInGrosz: ac.Infakt.HourlyRateInGrosz,
 	}, nil
 }
