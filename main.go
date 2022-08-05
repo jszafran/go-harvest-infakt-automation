@@ -44,6 +44,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if len(entries) == 0 {
+		log.Println("No hours fetched from Harvest API. Exiting.")
+		return
+	}
+
 	ms := MakeMonthlySummary(entries)
 
 	res := ProceedWithInfaktInvoice(ms)
