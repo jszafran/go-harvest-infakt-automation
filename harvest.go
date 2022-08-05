@@ -32,12 +32,12 @@ type MonthlySummary map[string]decimal.Decimal
 
 func (m MonthlySummary) Print() {
 	if len(m) == 0 {
-		fmt.Println("No hours logged for given period.")
+		log.Println("No hours logged for given period.")
 		return
 	}
 
 	for k, v := range m {
-		fmt.Printf("%s: %s hours\n", k, v)
+		log.Printf("%s: %s hours\n", k, v)
 	}
 }
 

@@ -20,7 +20,7 @@ type ServiceLine struct {
 	Name              string          `json:"name"`
 	TaxSymbol         string          `json:"tax_symbol"`
 	Quantity          decimal.Decimal `json:"quantity"`
-	NetPrice          uint            `json:"net_price"`
+	UnitNetPrice      uint            `json:"unit_net_price"`
 	FlatRateTaxSymbol string          `json:"flat_rate_tax_symbol"`
 }
 
@@ -34,6 +34,11 @@ type InvoiceDetails struct {
 
 type DraftInvoiceRequest struct {
 	Invoice InvoiceDetails `json:"invoice"`
+}
+
+type InvoiceDraftResponse struct {
+	Id     int    `json:"id"`
+	Number string `json:"number,"`
 }
 
 func NewInfaktClient(configPath string) (InfaktHTTP, error) {
@@ -77,7 +82,7 @@ func (i InfaktHTTP) generateServicesFromMonthlySummary(ms MonthlySummary) []Serv
 			Name:              fmt.Sprintf("Usługi programistyczne - %s", client),
 			TaxSymbol:         "23",
 			Quantity:          hrs,
-			NetPrice:          i.Config.HourlyRateInGrosz,
+			UnitNetPrice:      i.Config.HourlyRateInGrosz,
 			FlatRateTaxSymbol: "12",
 		}
 		svs = append(svs, sl)
@@ -104,10 +109,18 @@ func (i InfaktHTTP) CreateDraftInvoice(month int, year int, ms MonthlySummary) e
 			Services:       svs,
 		},
 	}
-	_, err = i.postRequest("invoices.json", reqData)
+	resp, err := i.postRequest("invoices.json", reqData)
 	if err != nil {
 		return err
 	}
 
+	var response InvoiceDraftResponse
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Successfully created an invoice draft. Details: %+v\n", response)
+	log.Printf("Link: https://app.infakt.pl/app/faktury/%d\n", response.Id)
 	return nil
 }

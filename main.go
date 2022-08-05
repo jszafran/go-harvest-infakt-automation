@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -38,7 +37,7 @@ func main() {
 	}
 	args := GetArgs()
 
-	fmt.Printf("Will fetch data for month: %d year: %d\n", args.Month, args.Year)
+	log.Printf("Will fetch data for month: %d year: %d\n", args.Month, args.Year)
 	entries, err := hvst.GetTimeEntries(args.Month, args.Year)
 
 	if err != nil {
@@ -50,7 +49,7 @@ func main() {
 	res := ProceedWithInfaktInvoice(ms)
 
 	if !res {
-		fmt.Println("Quitting")
+		log.Println("Exiting.")
 		os.Exit(0)
 	}
 
