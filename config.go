@@ -73,5 +73,6 @@ func InfaktConfigFromJSON(jsonPath string) (InfaktConfig, error) {
 		ApiUrl:            ac.Infakt.ApiUrl,
 		ApiKey:            ac.Infakt.ApiKey,
 		HourlyRateInGrosz: ac.Infakt.HourlyRateInGrosz,
+		ClientId:          ac.Infakt.ClientId,
 	}, nil
 }

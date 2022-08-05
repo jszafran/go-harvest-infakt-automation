@@ -25,11 +25,11 @@ type ServiceLine struct {
 }
 
 type InvoiceDetails struct {
-	ClientId       uint   `json:"client_id"`
-	PaymentMethods string `json:"payment_methods"`
-	SalesDate      string `json:"sales_date"`
-	InvoiceDate    string `json:"invoice_date"`
-	Services       []ServiceLine
+	ClientId       uint          `json:"client_id"`
+	PaymentMethods string        `json:"payment_method"`
+	SalesDate      string        `json:"sales_date"`
+	InvoiceDate    string        `json:"invoice_date"`
+	Services       []ServiceLine `json:"services"`
 }
 
 type DraftInvoiceRequest struct {
@@ -104,11 +104,10 @@ func (i InfaktHTTP) CreateDraftInvoice(month int, year int, ms MonthlySummary) e
 			Services:       svs,
 		},
 	}
-	fmt.Printf("%+v\n", reqData)
-	resp, err := i.postRequest("invoices.json", reqData)
+	_, err = i.postRequest("invoices.json", reqData)
 	if err != nil {
 		return err
 	}
-	fmt.Println(resp)
+
 	return nil
 }
