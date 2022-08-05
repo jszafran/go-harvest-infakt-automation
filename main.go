@@ -14,12 +14,16 @@ type Args struct {
 }
 
 func GetArgs() Args {
+	var (
+		month,
+		year int
+	)
+
 	currTime := time.Now()
-	var month int
-	var year int
 	flag.IntVar(&month, "month", int(currTime.Month()), "Month to generate the data for.")
 	flag.IntVar(&year, "year", currTime.Year(), "Year to generate the data for")
 	flag.Parse()
+
 	return Args{
 		Month: month,
 		Year:  year,
@@ -27,7 +31,8 @@ func GetArgs() Args {
 }
 
 func main() {
-	hvst, err := NewHarvestClient("config.json")
+	cfgPath := "config.json"
+	hvst, err := NewHarvestClient(cfgPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,5 +54,13 @@ func main() {
 		os.Exit(0)
 	}
 
-	fmt.Println("calling infakt")
+	infakt, err := NewInfaktClient(cfgPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = infakt.CreateDraftInvoice(args.Month, args.Year, ms)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

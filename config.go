@@ -18,8 +18,10 @@ type HarvestConfig struct {
 }
 
 type InfaktConfig struct {
-	InfaktApiUrl string `json:"infaktApiUrl"`
-	InfaktApiKey string `json:"infaktApiKey"`
+	ApiUrl            string `json:"infaktApiUrl"`
+	ApiKey            string `json:"infaktApiKey"`
+	HourlyRateInGrosz uint   `json:"infaktHourlyRateInGrosz"`
+	ClientId          uint   `json:"infaktClientId"`
 }
 
 func appConfigFromJSON(jsonPath string) (AppConfig, error) {
@@ -68,7 +70,8 @@ func InfaktConfigFromJSON(jsonPath string) (InfaktConfig, error) {
 	}
 
 	return InfaktConfig{
-		InfaktApiUrl: ac.InfaktApiUrl,
-		InfaktApiKey: ac.InfaktApiKey,
+		ApiUrl:            ac.ApiUrl,
+		ApiKey:            ac.ApiKey,
+		HourlyRateInGrosz: ac.HourlyRateInGrosz,
 	}, nil
 }
