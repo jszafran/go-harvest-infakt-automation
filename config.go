@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 )
 
@@ -31,13 +30,7 @@ func appConfigFromJSON(jsonPath string) (AppConfig, error) {
 		return ac, err
 	}
 
-	b, err := ioutil.ReadAll(file)
-
-	if err != nil {
-		return ac, err
-	}
-
-	err = json.Unmarshal(b, &ac)
+	err = json.NewDecoder(file).Decode(&ac)
 
 	if err != nil {
 		return ac, err

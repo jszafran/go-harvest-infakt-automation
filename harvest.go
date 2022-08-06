@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/shopspring/decimal"
-	"io"
 	"log"
 	"net/http"
 	"time"
@@ -88,12 +87,7 @@ func (h HarvestHTTP) GetTimeEntries(month int, year int) ([]TimeEntry, error) {
 		return entries, err
 	}
 
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return entries, err
-	}
-
-	err = json.Unmarshal(b, &apiResp)
+	err = json.NewDecoder(resp.Body).Decode(&apiResp)
 	if err != nil {
 		return entries, err
 	}
