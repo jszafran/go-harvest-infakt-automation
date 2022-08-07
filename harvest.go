@@ -15,7 +15,7 @@ type HarvestHTTP struct {
 }
 
 type Client struct {
-	Name string `json:name`
+	Name string `json:"name"`
 }
 
 type TimeEntry struct {
