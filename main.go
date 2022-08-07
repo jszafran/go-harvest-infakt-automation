@@ -1,9 +1,9 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -17,11 +17,32 @@ func GetArgs() Args {
 		month,
 		year int
 	)
+	argsLen := len(os.Args)
+	if !(argsLen == 1 || argsLen == 3) {
+		msg := `Incorrect number of args.
+Either provide no args (current month & year will be used) or 2 args (month & year).
+Example: geninvoice 7 2022
+`
+		log.Fatal(msg)
+	}
 
-	currTime := time.Now()
-	flag.IntVar(&month, "month", int(currTime.Month()), "Month to generate the data for.")
-	flag.IntVar(&year, "year", currTime.Year(), "Year to generate the data for")
-	flag.Parse()
+	if argsLen == 1 {
+		y, m, _ := time.Now().Date()
+		return Args{
+			Month: int(m),
+			Year:  y,
+		}
+	}
+
+	month, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	year, err = strconv.Atoi(os.Args[2])
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	return Args{
 		Month: month,
