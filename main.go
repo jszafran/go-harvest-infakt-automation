@@ -30,15 +30,20 @@ func GetArgs() Args {
 }
 
 func main() {
-	cfgPath := "config.json"
-	hvst, err := NewHarvestClient(cfgPath)
+	config, err := AppConfigFromEnv()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	harvest := NewHarvestClient(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	args := GetArgs()
 
 	log.Printf("Will fetch data for month: %d year: %d\n", args.Month, args.Year)
-	entries, err := hvst.GetTimeEntries(args.Month, args.Year)
+	entries, err := harvest.GetTimeEntries(args.Month, args.Year)
 
 	if err != nil {
 		log.Fatal(err)
@@ -58,10 +63,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	infakt, err := NewInfaktClient(cfgPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	infakt := NewInfaktClient(config)
 
 	err = infakt.CreateDraftInvoice(args.Month, args.Year, ms)
 	if err != nil {

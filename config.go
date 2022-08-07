@@ -1,8 +1,10 @@
 package main
 
 import (
-	"encoding/json"
+	"errors"
+	"fmt"
 	"os"
+	"strconv"
 )
 
 type AppConfig struct {
@@ -23,49 +25,79 @@ type InfaktConfig struct {
 	ClientId          uint   `json:"infaktClientId"`
 }
 
-func appConfigFromJSON(jsonPath string) (AppConfig, error) {
-	var ac AppConfig
-	file, err := os.Open(jsonPath)
-	if err != nil {
-		return ac, err
+func AppConfigFromEnv() (AppConfig, error) {
+	// TODO: research how similar thing would be done with Viper
+
+	var (
+		config                  AppConfig
+		harvestApiUrl           string
+		harvestAuthToken        string
+		harvestAccountId        string
+		infaktApiUrl            string
+		infaktApiKey            string
+		infaktHourlyRateInGrosz uint
+		infaktClientId          uint
+	)
+
+	missingEnvVarError := func(varName string) string {
+		return fmt.Sprintf("missing %s env variable", varName)
 	}
 
-	err = json.NewDecoder(file).Decode(&ac)
-
-	if err != nil {
-		return ac, err
+	harvestApiUrl = os.Getenv("HARVEST_API_URL")
+	if harvestApiUrl == "" {
+		return config, errors.New(missingEnvVarError("HARVEST_API_URL"))
 	}
 
-	return ac, nil
-}
-
-func HarvestConfigFromJSON(jsonPath string) (HarvestConfig, error) {
-	var hvConf HarvestConfig
-	ac, err := appConfigFromJSON(jsonPath)
-
-	if err != nil {
-		return hvConf, err
+	harvestAuthToken = os.Getenv("HARVEST_AUTH_TOKEN")
+	if harvestAuthToken == "" {
+		return config, errors.New(missingEnvVarError("HARVEST_AUTH_TOKEN"))
 	}
 
-	return HarvestConfig{
-		ApiUrl:    ac.Harvest.ApiUrl,
-		AuthToken: ac.Harvest.AuthToken,
-		AccountId: ac.Harvest.AccountId,
-	}, nil
-}
-
-func InfaktConfigFromJSON(jsonPath string) (InfaktConfig, error) {
-	var ifConf InfaktConfig
-	ac, err := appConfigFromJSON(jsonPath)
-
-	if err != nil {
-		return ifConf, err
+	harvestAccountId = os.Getenv("HARVEST_ACCOUNT_ID")
+	if harvestAccountId == "" {
+		return config, errors.New(missingEnvVarError("HARVEST_ACCOUNT_ID"))
 	}
 
-	return InfaktConfig{
-		ApiUrl:            ac.Infakt.ApiUrl,
-		ApiKey:            ac.Infakt.ApiKey,
-		HourlyRateInGrosz: ac.Infakt.HourlyRateInGrosz,
-		ClientId:          ac.Infakt.ClientId,
-	}, nil
+	infaktApiUrl = os.Getenv("INFAKT_API_URL")
+	if infaktApiUrl == "" {
+		return config, errors.New(missingEnvVarError("INFAKT_API_URL"))
+	}
+
+	infaktApiKey = os.Getenv("INFAKT_API_KEY")
+	if infaktApiKey == "" {
+		return config, errors.New(missingEnvVarError("INFAKT_API_KEY"))
+	}
+
+	rateParsed, err := strconv.ParseUint(os.Getenv("INFAKT_HOURLY_RATE_IN_GROSZ"), 0, 64)
+	if err != nil {
+		return config, err
+	}
+	infaktHourlyRateInGrosz = uint(rateParsed)
+	if infaktHourlyRateInGrosz == 0 {
+		return config, fmt.Errorf("infakt hourly rate in grosz: %w", err)
+	}
+
+	clientIdParsed, err := strconv.ParseUint(os.Getenv("INFAKT_CLIENT_ID"), 0, 64)
+	infaktClientId = uint(clientIdParsed)
+	if err != nil {
+		return config, err
+	}
+	if infaktClientId == 0 {
+		return config, fmt.Errorf("infakt client id cannot be 0: %w", err)
+	}
+
+	config = AppConfig{
+		Harvest: HarvestConfig{
+			ApiUrl:    harvestApiUrl,
+			AuthToken: harvestAuthToken,
+			AccountId: harvestAccountId,
+		},
+		Infakt: InfaktConfig{
+			ApiUrl:            infaktApiUrl,
+			ApiKey:            infaktApiKey,
+			HourlyRateInGrosz: infaktHourlyRateInGrosz,
+			ClientId:          infaktClientId,
+		},
+	}
+	return config, nil
 }

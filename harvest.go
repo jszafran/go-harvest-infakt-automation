@@ -40,18 +40,13 @@ func (m MonthlySummary) Print() {
 	}
 }
 
-func NewHarvestClient(configPath string) (HarvestHTTP, error) {
-	var hv HarvestHTTP
-	hvConf, err := HarvestConfigFromJSON(configPath)
-	if err != nil {
-		return hv, err
-	}
-
+func NewHarvestClient(config AppConfig) HarvestHTTP {
+	hvConf := config.Harvest
 	httpClient := http.Client{Timeout: time.Second * 5}
 	return HarvestHTTP{
 		Config: hvConf,
 		client: httpClient,
-	}, nil
+	}
 }
 
 func (h HarvestHTTP) getRequest(path string) (*http.Response, error) {

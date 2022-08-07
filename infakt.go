@@ -41,17 +41,13 @@ type InvoiceDraftResponse struct {
 	Number string `json:"number,"`
 }
 
-func NewInfaktClient(configPath string) (InfaktHTTP, error) {
-	var infakt InfaktHTTP
-	infaktConf, err := InfaktConfigFromJSON(configPath)
-	if err != nil {
-		return infakt, err
-	}
+func NewInfaktClient(config AppConfig) InfaktHTTP {
+	infaktConf := config.Infakt
 	httpClient := http.Client{Timeout: time.Second * 5}
 	return InfaktHTTP{
 		Config: infaktConf,
 		client: httpClient,
-	}, nil
+	}
 }
 
 func (i InfaktHTTP) postRequest(path string, data DraftInvoiceRequest) (*http.Response, error) {
