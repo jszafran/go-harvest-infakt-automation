@@ -74,14 +74,16 @@ func (i InfaktHTTP) postRequest(path string, data DraftInvoiceRequest) (*http.Re
 func (i InfaktHTTP) generateServicesFromMonthlySummary(ms MonthlySummary) []ServiceLine {
 	svs := make([]ServiceLine, 0)
 	for client, hrs := range ms {
-		sl := ServiceLine{
-			Name:              fmt.Sprintf("Usługi programistyczne - %s", client),
-			TaxSymbol:         "23",
-			Quantity:          hrs,
-			UnitNetPrice:      i.Config.HourlyRateInGrosz,
-			FlatRateTaxSymbol: "12",
+		if client != TimeOffClient {
+			sl := ServiceLine{
+				Name:              fmt.Sprintf("Usługi programistyczne - %s", client),
+				TaxSymbol:         "23",
+				Quantity:          hrs,
+				UnitNetPrice:      i.Config.HourlyRateInGrosz,
+				FlatRateTaxSymbol: "12",
+			}
+			svs = append(svs, sl)
 		}
-		svs = append(svs, sl)
 	}
 	return svs
 }

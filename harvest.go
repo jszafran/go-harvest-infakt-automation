@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const TimeOffClient = "TimeOff"
+
 type HarvestHTTP struct {
 	Config HarvestConfig
 	client http.Client
@@ -100,7 +102,7 @@ func MakeMonthlySummary(te []TimeEntry) MonthlySummary {
 
 	for _, entry := range te {
 		if n := entry.Project.Name; n == "Time Off" || n == "Public Holiday" {
-			ms["TimeOff"] = ms["TimeOff"].Add(entry.RoundedHours)
+			ms[TimeOffClient] = ms[TimeOffClient].Add(entry.RoundedHours)
 		} else {
 			ms[entry.Client.Name] = ms[entry.Client.Name].Add(entry.RoundedHours)
 		}
