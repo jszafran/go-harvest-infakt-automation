@@ -18,9 +18,14 @@ type Client struct {
 	Name string `json:"name"`
 }
 
+type Project struct {
+	Name string `json:"name"`
+}
+
 type TimeEntry struct {
 	Client       Client
 	RoundedHours decimal.Decimal `json:"rounded_hours"`
+	Project      Project
 }
 
 type TimeEntriesApiResponse struct {
@@ -94,7 +99,11 @@ func MakeMonthlySummary(te []TimeEntry) MonthlySummary {
 	ms := make(map[string]decimal.Decimal)
 
 	for _, entry := range te {
-		ms[entry.Client.Name] = ms[entry.Client.Name].Add(entry.RoundedHours)
+		if n := entry.Project.Name; n == "Time Off" || n == "Public Holiday" {
+			ms["TimeOff"] = ms["TimeOff"].Add(entry.RoundedHours)
+		} else {
+			ms[entry.Client.Name] = ms[entry.Client.Name].Add(entry.RoundedHours)
+		}
 	}
 	return ms
 }
